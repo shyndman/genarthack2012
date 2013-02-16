@@ -59,9 +59,6 @@ wsServer.on('request', function(request) {
     // Handle incoming messages
     onephone.on('message', function(message) {
       try {
-        var command = JSON.parse(message.utf8Data);
-        console.log('got', command);
-
         for (var i = 0; i < onephoneConsumers.length; i++) {
           c = onephoneConsumers[i];
           c.sendUTF(message.utf8Data);
