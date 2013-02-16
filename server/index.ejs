@@ -16,7 +16,7 @@
       var isConnected = false;
       var body = document.querySelector('body');
       var motion = {}, tiltLR, tiltFB, dir, touches = {},
-          size = { w: body.offset.width, h: body.offset.height };
+          size = { w: body.offsetWidth, h: body.offsetHeight };
 
       connection.onopen = function(e) {
         document.body.style.backgroundColor = '#00AA00';
