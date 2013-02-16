@@ -24,6 +24,10 @@
         document.body.style.backgroundColor = '#AA0000';
         console.log('No way dude!!');
       };
+      connection.onclose = function(e) {
+        document.body.style.backgroundColor = '#AA0000';
+        console.log('No way dude!!');
+      };
 
       function blast() {
         if (!isConnected) return;
