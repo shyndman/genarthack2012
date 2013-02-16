@@ -2,76 +2,89 @@
 <html>
 <head>
   <title></title>
+  <style>
+    body, html {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+  <script>
+    window.onload = function() {
+      var wsurl = "ws://ec2-54-234-201-143.compute-1.amazonaws.com/";
+
+      var connection = new WebSocket(wsurl, 'onephone');
+      var isConnected = false;
+      var tiltLR, tiltFB, dir, touches = {};
+
+      connection.onopen = function(e) {
+        document.body.style.backgroundColor = '#00AA00';
+        isConnected = true;
+      };
+      connection.onerror = function(e) {
+        document.body.style.backgroundColor = '#AA0000';
+        console.log('No way dude!!');
+      };
+      connection.onclose = function(e) {
+        document.body.style.backgroundColor = '#AA0000';
+        console.log('No way dude!!');
+      };
+
+      function blast() {
+        if (!isConnected) return;
+
+        document.querySelector('#checkit').innerHTML = 'Blasting ' + JSON.stringify({
+          tiltLR: tiltLR,
+          tiltFB: tiltFB,
+          dir: dir,
+          touches: touches
+        });
+
+        connection.send(JSON.stringify({
+          tiltLR: tiltLR,
+          tiltFB: tiltFB,
+          dir: dir,
+          touches: touches
+        }));
+      }
+
+      function handleTouchEvent(e) {
+        e.preventDefault();
+        extractTheGoodStuff(e.touches);
+        blast();
+      }
+
+      function extractTheGoodStuff(domTouches) {
+        touches = {};
+        for (var i = 0; i < domTouches.length; i++) {
+          t = domTouches[i];
+          touches[t.identifier] = {
+            x: t.pageX,
+            y: t.pageY
+          };
+        };
+      }
+
+      document.body.addEventListener('touchmove', handleTouchEvent, false);
+      document.body.addEventListener('touchstart', handleTouchEvent, false);
+      document.body.addEventListener('touchend', handleTouchEvent, false);
+
+      window.addEventListener('deviceorientation', function(eventData) {
+        // gamma is the left-to-right tilt in degrees, where right is positive
+        tiltLR = eventData.gamma;
+
+        // beta is the front-to-back tilt in degrees, where front is positive
+        tiltFB = eventData.beta;
+
+        // alpha is the compass direction the device is facing in degrees
+        dir = eventData.alpha
+
+        // call our orientation event handler
+        blast();
+      }, false);
+    }
+  </script>
 </head>
 <body>
-  <div id="checkit">Connecting...</div>
-  <script>
-    var wsurl = "ws://ec2-184-73-104-159.compute-1.amazonaws.com";
-
-    var connection = new WebSocket(wsurl, 'onephone');
-    var isConnected = false;
-    var tiltLR, tiltFB, dir, touches = {};
-
-    connection.onopen = function(e) {
-      console.log('Hazah!!');
-      isConnected = true;
-    };
-    connection.onerror = function(e) {
-      console.log('No way dude!!');
-    };
-
-    function blast() {
-      if (!isConnected) return;
-
-      document.querySelector('#checkit').innerHTML = 'Blasting ' + JSON.stringify({
-        tiltLR: tiltLR,
-        tiltFB: tiltFB,
-        dir: dir,
-        touches: touches
-      });
-
-      connection.send(JSON.stringify({
-        tiltLR: tiltLR,
-        tiltFB: tiltFB,
-        dir: dir,
-        touches: touches
-      }));
-    }
-
-    function handleTouchEvent(e) {
-      extractTheGoodStuff(e.touches);
-      blast();
-    }
-
-    function extractTheGoodStuff(domTouches) {
-      touches = {};
-      for (var i = 0; i < domTouches.length; i++) {
-        t = domTouches[i];
-        touches[t.identifier] = {
-          x: t.pageX,
-          y: t.pageY
-        });
-      };
-    }
-
-    var body = document.querySelector('body');
-    body.addEventListener('touchmove', handleTouchEvent);
-    body.addEventListener('touchstart', handleTouchEvent);
-    body.addEventListener('touchend', handleTouchEvent);
-
-    window.addEventListener('deviceorientation', function(eventData) {
-      // gamma is the left-to-right tilt in degrees, where right is positive
-      tiltLR = eventData.gamma;
-
-      // beta is the front-to-back tilt in degrees, where front is positive
-      tiltFB = eventData.beta;
-
-      // alpha is the compass direction the device is facing in degrees
-      dir = eventData.alpha
-
-      // call our orientation event handler
-      blast();
-    }, false);
-  </script>
+  <div id='checkit'></div>
 </body>
 </html>
