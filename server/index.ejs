@@ -14,7 +14,7 @@
 
       var connection = new WebSocket(wsurl, 'onephone');
       var isConnected = false;
-      var motion, tiltLR, tiltFB, dir, touches = {};
+      var motion = {}, tiltLR, tiltFB, dir, touches = {};
 
       connection.onopen = function(e) {
         document.body.style.backgroundColor = '#00AA00';
@@ -71,8 +71,10 @@
       document.body.addEventListener('touchend', handleTouchEvent, false);
 
       window.addEventListener('devicemotion', function(eventData) {
-        console.log(motion);
-        motion = {x: eventData.x, y: eventData.y, z: eventData.z };
+        motion = {
+          x: eventData.acceleration.x,
+          y: eventData.acceleration.y,
+          z: eventData.acceleration.z };
       }, false);
 
       window.addEventListener('deviceorientation', function(eventData) {
