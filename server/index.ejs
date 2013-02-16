@@ -15,13 +15,9 @@
       var connection = new WebSocket(wsurl, 'onephone');
       var isConnected = false;
       var body = document.querySelector('body');
-      var id, motion = {}, tiltLR, tiltFB, dir, touches = {},
+      var motion = {}, tiltLR, tiltFB, dir, touches = {},
           size = { w: body.offsetWidth, h: body.offsetHeight };
 
-      connection.onmessage = function(message) {
-        console.log('id', message);
-        id = message;
-      }
       connection.onopen = function(e) {
         document.body.style.backgroundColor = '#00AA00';
         isConnected = true;
@@ -39,7 +35,6 @@
         if (!isConnected) return;
 
         document.querySelector('#checkit').innerHTML = 'Blasting ' + JSON.stringify({
-          id: id,
           tiltLR: tiltLR,
           tiltFB: tiltFB,
           dir: dir,
@@ -49,7 +44,6 @@
         });
 
         connection.send(JSON.stringify({
-          id: id,
           tiltLR: tiltLR,
           tiltFB: tiltFB,
           dir: dir,

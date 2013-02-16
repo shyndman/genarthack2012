@@ -42,7 +42,8 @@ var wsServer = new WebSocketServer({
 var onephone = null;
 var onephoneConsumers = [];
 var phones = []
-var phoneID = 0;
+var current = "";
+var nextID = 0;
 
 wsServer.on('request', function(request) {
   console.log("req ", request.requestedProtocols);
@@ -51,22 +52,24 @@ wsServer.on('request', function(request) {
       console.log('disconnecting prev phone', onephone.remoteAddress);
       onephone.disconnect();
     }
-    var onephone = request.accept('onephone', request.origin);
-    console.log(onephone.remoteAddress + " connected - Protocol Version " + onephone.webSocketVersion);
-    phones.push(onephone);
-    onephone.sendUTF("" + id);
+    var id = nextID++;
+    var phone = request.accept('onephone', request.origin);
+    console.log(phone.remoteAddress + " connected - Protocol Version " + phone.webSocketVersion);
+    phones.push(phone);
 
     // Handle closed connections
-    onephone.on('close', function() {
-      console.log("phone " + onephone.remoteAddress + " disconnected");
+    phone.on('close', function() {
+      console.log("phone " + phone.remoteAddress + " disconnected");
     });
 
     // Handle incoming messages
-    onephone.on('message', function(message) {
+    phone.on('message', function(message) {
       try {
         for (var i = 0; i < onephoneConsumers.length; i++) {
           c = onephoneConsumers[i];
-          c.sendUTF(message.utf8Data);
+          d = JSON.parse(message.utf8Data);
+          d.id = id;
+          c.sendUTF(JSON.stringify(d));
         }
       }
       catch(e) {
