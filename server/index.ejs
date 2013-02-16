@@ -19,9 +19,8 @@
           size = { w: body.offsetWidth, h: body.offsetHeight };
 
       connection.onmessage = function(message) {
-        var p = JSON.parse(message)
-        if (p != null)
-          id = p.id;
+        console.log('id', message);
+        id = message;
       }
       connection.onopen = function(e) {
         document.body.style.backgroundColor = '#00AA00';
