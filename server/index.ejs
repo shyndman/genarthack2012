@@ -14,7 +14,7 @@
 
       var connection = new WebSocket(wsurl, 'onephone');
       var isConnected = false;
-      var tiltLR, tiltFB, dir, touches = {};
+      var motion, tiltLR, tiltFB, dir, touches = {};
 
       connection.onopen = function(e) {
         document.body.style.backgroundColor = '#00AA00';
@@ -36,14 +36,16 @@
           tiltLR: tiltLR,
           tiltFB: tiltFB,
           dir: dir,
-          touches: touches
+          touches: touches,
+          motion: motion
         });
 
         connection.send(JSON.stringify({
           tiltLR: tiltLR,
           tiltFB: tiltFB,
           dir: dir,
-          touches: touches
+          touches: touches,
+          motion: motion
         }));
       }
 
@@ -67,6 +69,10 @@
       document.body.addEventListener('touchmove', handleTouchEvent, false);
       document.body.addEventListener('touchstart', handleTouchEvent, false);
       document.body.addEventListener('touchend', handleTouchEvent, false);
+
+      window.addEventListener('devicemotion', function(eventData) {
+        motion = {x: eventData.x, y: eventData.y, z: eventData.z };
+      }, false);
 
       window.addEventListener('deviceorientation', function(eventData) {
         // gamma is the left-to-right tilt in degrees, where right is positive
