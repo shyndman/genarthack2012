@@ -17,10 +17,11 @@
       var tiltLR, tiltFB, dir, touches = {};
 
       connection.onopen = function(e) {
-        document.body.style.backgroundColor = '#009900';
+        document.body.style.backgroundColor = '#00AA00';
         isConnected = true;
       };
       connection.onerror = function(e) {
+        document.body.style.backgroundColor = '#AA0000';
         console.log('No way dude!!');
       };
 
@@ -43,6 +44,7 @@
       }
 
       function handleTouchEvent(e) {
+        e.preventDefault();
         extractTheGoodStuff(e.touches);
         blast();
       }
