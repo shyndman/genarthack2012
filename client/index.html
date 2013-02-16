@@ -5,7 +5,9 @@
 <body>
   <div id="checkit">Connecting...</div>
   <script>
-    var connection = new WebSocket('ws://ec2-184-73-104-159.compute-1.amazonaws.com', 'onephone');
+    window.wsurl = 'ws://ec2-184-73-104-159.compute-1.amazonaws.com';
+    window.wsurl = "ws://localhost:8080";
+    var connection = new WebSocket(wsurl, 'onephone');
     var isConnected = false;
     var tiltLR, tiltFB, dir, touches = [];
 
