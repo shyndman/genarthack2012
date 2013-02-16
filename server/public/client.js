@@ -12,8 +12,11 @@ function events(on_message, on_close) {
 };
 
 function deltas(f) {
-  var prev = {tiltLR: 0, tiltFB: 0, dir: 0, touches: []};
+  var prevs = {}
   events(function (data) {
+    if (prevs[data.id] == null)
+      prevs[data.id] = {tiltLR: 0, tiltFB: 0, dir: 0, touches: []};
+    prev = prevs[data.id];
     data.dLR = (prev.tiltLR - data.tiltLR) || 0;
     data.dFB = (prev.tiltFB - data.tiltFB) || 0;
     data.dDir = (prev.dir - data.dir) || 0;
@@ -30,7 +33,7 @@ function deltas(f) {
         }
       }
     }
-    prev = data;
+    prevs[data.id] = data;
     f(data);
   }, null);
 }
