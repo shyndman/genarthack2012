@@ -14,9 +14,9 @@ function onePhoneEvents(on_message, on_close) {
 function deltas(f) {
   var prev = {tiltLR: 0, tiltFB: 0, dir: 0, touches: []};
   onePhoneEvents(function (data) {
-    data.dLR = (data.tiltLR - prev.tiltLR) || 0;
-    data.dFB = (data.tiltFB - prev.tiltFB) || 0;
-    data.dDir = (data.dir - prev.dir) || 0;
+    data.dLR = (prev.tiltLR - data.tiltLR) || 0;
+    data.dFB = (prev.tiltFB - data.tiltFB) || 0;
+    data.dDir = (prev.dir - data.dir) || 0;
     for (var i = 0; i < 5; i++) {
       t = data.touches[i];
       p = prev.touches[i];
@@ -25,8 +25,8 @@ function deltas(f) {
           t.dx = 0;
           t.dy = 0;
         } else {
-          t.dx = (t.x - p.x) || 0;
-          t.dy = (t.y - p.y) || 0;
+          t.dx = (p.x - t.x) || 0;
+          t.dy = (p.y - t.y) || 0;
         }
       }
     }
@@ -34,4 +34,3 @@ function deltas(f) {
     f(data);
   }, null);
 }
-
