@@ -1,7 +1,7 @@
 window.wsurl = "ws://ec2-54-234-201-143.compute-1.amazonaws.com";
 window.wsCtor = window['MozWebSocket'] ? MozWebSocket : WebSocket;
 
-function onePhoneEvents(on_message, on_close) {
+function events(on_message, on_close) {
   this.socket = new wsCtor(wsurl, 'onephoneconsumer');
   this.socket.onmessage = function(message) {
     var data = JSON.parse(message.data);
@@ -13,7 +13,7 @@ function onePhoneEvents(on_message, on_close) {
 
 function deltas(f) {
   var prev = {tiltLR: 0, tiltFB: 0, dir: 0, touches: []};
-  onePhoneEvents(function (data) {
+  events(function (data) {
     data.dLR = (prev.tiltLR - data.tiltLR) || 0;
     data.dFB = (prev.tiltFB - data.tiltFB) || 0;
     data.dDir = (prev.dir - data.dir) || 0;
