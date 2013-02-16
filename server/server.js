@@ -15,7 +15,7 @@
  *  limitations under the License.
  ***********************************************************************/
 
-var WebSocketServer = require('../../lib/websocket').server;
+var WebSocketServer = require('websocket').server;
 var express = require('express');
 
 var app = express.createServer();
@@ -43,19 +43,17 @@ var onephone = null;
 var onephoneConsumers = [];
 
 wsServer.on('request', function(request) {
-  if (onephone) {
-    console.log('disconnecting prev phone', onephone.remoteAddress);
-    onephone.disconnect();
-  }
-  var _onephone = request.accept('onephone', request.origin);
-  if (_onephone) {
-    onephone = _onephone
+  if (request.requestedProtocols[0] == 'onephone') {
+    if (onephone != null) {
+      console.log('disconnecting prev phone', onephone.remoteAddress);
+      onephone.disconnect();
+    }
+    var onephone = request.accept('onephone', request.origin);
     console.log(onephone.remoteAddress + " connected - Protocol Version " + onephone.webSocketVersion);
 
     // Handle closed connections
     onephone.on('close', function() {
       console.log(onephone.remoteAddress + " disconnected");
-      onephone = null;
     });
 
     // Handle incoming messages
@@ -77,22 +75,23 @@ wsServer.on('request', function(request) {
         // do nothing if there's an error.
       }
     });
-  }
+  } else if (request.requestedProtocols[0] == 'onephoneConsumer') {
 
-  var onephoneConsumer = request.accept('onephoneConsumer', request.origin);
+    var onephoneConsumer = request.accept('onephoneConsumer', request.origin);
 
-  if (onephoneConsumer) {
-    onephoneConsumers.push(onephoneConsumer);
-    // Handle closed onephoneConsumers
-    onephoneConsumer.on('close', function() {
-      console.log(onephoneConsumer.remoteAddress + " disconnected");
+    if (onephoneConsumer != null) {
+      onephoneConsumers.push(onephoneConsumer);
+      // Handle closed onephoneConsumers
+      onephoneConsumer.on('close', function() {
+        console.log(onephoneConsumer.remoteAddress + " disconnected");
 
-      var index = onephoneConsumers.indexOf(onephoneConsumer);
-      if (index !== -1) {
-        // remove the onephoneConsumer from the pool
-        onephoneConsumers.splice(index, 1);
-      }
-    });
+        var index = onephoneConsumers.indexOf(onephoneConsumer);
+        if (index !== -1) {
+          // remove the onephoneConsumer from the pool
+          onephoneConsumers.splice(index, 1);
+        }
+      });
+    }
   }
 });
 
