@@ -17,7 +17,7 @@ function deltas(f) {
     if (prevs[data.id] == null)
       prevs[data.id] = {tiltLR: 0, tiltFB: 0, dir: 0, touches: []};
     prev = prevs[data.id];
-    data.dLR = (prev.tiltLR - data.tiltLR) || 0;
+    data.dLR = (data.tiltLR - prev.tiltLR) || 0;
     data.dFB = (prev.tiltFB - data.tiltFB) || 0;
     data.dDir = (prev.dir - data.dir) || 0;
     for (var i = 0; i < 5; i++) {
