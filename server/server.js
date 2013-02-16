@@ -41,6 +41,9 @@ var wsServer = new WebSocketServer({
 
 var onephone = null;
 var onephoneConsumers = [];
+var phones = []
+var phoneID = 0;
+
 wsServer.on('request', function(request) {
   console.log("req ", request.requestedProtocols);
   if (request.requestedProtocols[0] == 'onephone') {
@@ -50,6 +53,8 @@ wsServer.on('request', function(request) {
     }
     var onephone = request.accept('onephone', request.origin);
     console.log(onephone.remoteAddress + " connected - Protocol Version " + onephone.webSocketVersion);
+    phones.push(onephone);
+    onephone.sendUTF(JSON.stringify({id: phoneID++}));
 
     // Handle closed connections
     onephone.on('close', function() {
