@@ -41,8 +41,8 @@ var wsServer = new WebSocketServer({
 
 var onephone = null;
 var onephoneConsumers = [];
-
 wsServer.on('request', function(request) {
+  console.log("req ", request.requestedProtocols);
   if (request.requestedProtocols[0] == 'onephone') {
     if (onephone != null) {
       console.log('disconnecting prev phone', onephone.remoteAddress);
@@ -53,45 +53,41 @@ wsServer.on('request', function(request) {
 
     // Handle closed connections
     onephone.on('close', function() {
-      console.log(onephone.remoteAddress + " disconnected");
+      console.log("phone " + onephone.remoteAddress + " disconnected");
     });
 
     // Handle incoming messages
     onephone.on('message', function(message) {
       try {
         var command = JSON.parse(message.utf8Data);
+        console.log('got', command);
 
-        if (onephoneserver) {
-          // rebroadcast command
-          console.log("send", command);
-          onephoneserver.sendUTF(message.utf8Data);
-        } else {
-          console.log("can't send", command);
+        for (var i = 0; i < onephoneConsumers.length; i++) {
+          c = onephoneConsumers[i];
+          c.sendUTF(message.utf8Data);
         }
-
       }
       catch(e) {
         console.log("noooo", e.message);
         // do nothing if there's an error.
       }
     });
-  } else if (request.requestedProtocols[0] == 'onephoneConsumer') {
+  } else if (request.requestedProtocols[0] == 'onephoneconsumer') {
 
-    var onephoneConsumer = request.accept('onephoneConsumer', request.origin);
+    var onephoneConsumer = request.accept('onephoneconsumer', request.origin);
 
-    if (onephoneConsumer != null) {
-      onephoneConsumers.push(onephoneConsumer);
-      // Handle closed onephoneConsumers
-      onephoneConsumer.on('close', function() {
-        console.log(onephoneConsumer.remoteAddress + " disconnected");
+    console.log("add consumer");
+    onephoneConsumers.push(onephoneConsumer);
+    // Handle closed onephoneConsumers
+    onephoneConsumer.on('close', function() {
+      console.log("consumer " + onephoneConsumer.remoteAddress + " disconnected");
 
-        var index = onephoneConsumers.indexOf(onephoneConsumer);
-        if (index !== -1) {
-          // remove the onephoneConsumer from the pool
-          onephoneConsumers.splice(index, 1);
-        }
-      });
-    }
+      var index = onephoneConsumers.indexOf(onephoneConsumer);
+      if (index !== -1) {
+        // remove the onephoneConsumer from the pool
+        onephoneConsumers.splice(index, 1);
+      }
+    });
   }
 });
 
