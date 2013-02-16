@@ -73,7 +73,7 @@
       window.addEventListener('devicemotion', function(eventData) {
         motion = {
           x: eventData.acceleration.x,
-          y: eventData.acceleration.y,
+          y: -eventData.acceleration.y,
           z: eventData.acceleration.z };
       }, false);
 
