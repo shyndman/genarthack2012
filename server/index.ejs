@@ -71,6 +71,7 @@
       document.body.addEventListener('touchend', handleTouchEvent, false);
 
       window.addEventListener('devicemotion', function(eventData) {
+        console.log(motion);
         motion = {x: eventData.x, y: eventData.y, z: eventData.z };
       }, false);
 
