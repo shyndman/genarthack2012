@@ -1,61 +1,76 @@
 <!DOCTYPE html>
 <html>
-<!--
-  Copyright 2010-2011 Worlize Inc.
-  
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-  
-      http://www.apache.org/licenses/LICENSE-2.0
-  
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
--->
 <head>
-  <meta charset="utf-8">
-  <title>WebSocket Whiteboard Example</title>
-  <script src="/client.js" type="text/javascript" charset="utf-8"></script>
-  <link rel="stylesheet" href="/client.css">
+  <title></title>
 </head>
 <body>
-  <h1>Shared Whiteboard Example</h1>
-
-  <p>As of the time of this writing, this example requires at least
-     <a href="http://www.mozilla.com/firefox/channel/">Firefox 7 beta</a> or
-     <a href="http://www.google.com/landing/chrome/beta/">Chrome 14 beta</a>.</p>
-
-  <canvas id="whiteboardCanvas" width="800" height="450"></canvas>
-
-  <br>
-  <button onclick="setColor(200,0,0)"
-          style="color: #FFF; background-color: rgb(200,0,0)">Red</button>
-
-  <button onclick="setColor(0,128,0)"
-          style="color: #FFF; background-color: rgb(0,128,0)">Green</button>
-
-  <button onclick="setColor(0,0,255)"
-          style="color: #FFF; background-color: rgb(0,0,255)">Blue</button>
-
-  <button onclick="setColor(0,0,0)"
-          style="color: #FFF; background-color: rgb(0,0,0)">Black</button>
-  
-  <button onclick="erase()">Erase Whiteboard</button>
-  
+  <div id="checkit">Connecting...</div>
   <script>
-    var client = new Whiteboard('whiteboardCanvas');
-    client.connect();
-    
-    function erase() {
-      client.sendClear();
+    var connection = new WebSocket('ws://ec2-184-73-104-159.compute-1.amazonaws.com', 'onephone');
+    var isConnected = false;
+    var tiltLR, tiltFB, dir, touches = [];
+
+    connection.onopen = function(e) {
+      console.log('Hazah!!');
+      isConnected = true;
+    };
+    connection.onerror = function(e) {
+      console.log('No way dude!!');
+    };
+
+    function blast() {
+      if (!isConnected) return;
+
+      document.querySelector('#checkit').innerHTML = 'Blasting ' + JSON.stringify({
+        tiltLR: tiltLR,
+        tiltFB: tiltFB,
+        dir: dir,
+        touches: touches
+      });
+
+      connection.send(JSON.stringify({
+        tiltLR: tiltLR,
+        tiltFB: tiltFB,
+        dir: dir,
+        touches: touches
+      }));
     }
-    
-    function setColor(r,g,b) {
-      client.setColor(r,g,b);
+
+    function handleTouchEvent(e) {
+      extractTheGoodStuff(e.touches);
+      blast();
     }
+
+    function extractTheGoodStuff(domTouches) {
+      touches = [];
+      for (var i = 0; i < domTouches.length; i++) {
+        t = domTouches[i];
+        touches.push({
+          id: t.identifier,
+          x: t.pageX,
+          y: t.pageY
+        });
+      };
+    }
+
+    var body = document.querySelector('body');
+    body.addEventListener('touchmove', handleTouchEvent);
+    body.addEventListener('touchstart', handleTouchEvent);
+    body.addEventListener('touchend', handleTouchEvent);
+
+    window.addEventListener('deviceorientation', function(eventData) {
+      // gamma is the left-to-right tilt in degrees, where right is positive
+      tiltLR = eventData.gamma;
+
+      // beta is the front-to-back tilt in degrees, where front is positive
+      tiltFB = eventData.beta;
+
+      // alpha is the compass direction the device is facing in degrees
+      dir = eventData.alpha
+
+      // call our orientation event handler
+      blast();
+    }, false);
   </script>
 </body>
 </html>
