@@ -1,5 +1,5 @@
-window.wsurl = "ws://ec2-184-73-104-159.compute-1.amazonaws.com";
-window.wsurl = "ws://localhost:8080";
+window.wsurl = "ec2-54-234-201-143.compute-1.amazonaws.com";
+//window.wsurl = "ws://localhost:8080";
 window.wsCtor = window['MozWebSocket'] ? MozWebSocket : WebSocket;
 
 function simulate() {
