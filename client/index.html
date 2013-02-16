@@ -35,6 +35,11 @@
       }));
     }
 
+    function handleTouchEvent(e) {
+      extractTheGoodStuff(e.touches);
+      blast();
+    }
+
     function extractTheGoodStuff(domTouches) {
       touches = [];
       for (var i = 0; i < domTouches.length; i++) {
@@ -45,11 +50,6 @@
           y: t.pageY
         });
       };
-    }
-
-    function handleTouchEvent(e) {
-      extractTheGoodStuff(e.touches);
-      blast();
     }
 
     var body = document.querySelector('body');
