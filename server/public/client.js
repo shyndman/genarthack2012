@@ -25,8 +25,8 @@ function deltas(f) {
           c.dx = 0;
           c.dy = 0;
         } else {
-          c.dx = (p.x - c.x) || 0;
-          c.dy = (p.y - c.y) || 0;
+          c.dx = (c.x - p.x) || 0;
+          c.dy = (c.y - p.y) || 0;
         }
       }
     }
