@@ -54,7 +54,7 @@ wsServer.on('request', function(request) {
     var onephone = request.accept('onephone', request.origin);
     console.log(onephone.remoteAddress + " connected - Protocol Version " + onephone.webSocketVersion);
     phones.push(onephone);
-    onephone.sendUTF(id);
+    onephone.sendUTF("" + id);
 
     // Handle closed connections
     onephone.on('close', function() {
