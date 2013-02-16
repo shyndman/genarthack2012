@@ -18,15 +18,15 @@ function deltas(f) {
     data.dFB = (prev.tiltFB - data.tiltFB) || 0;
     data.dDir = (prev.dir - data.dir) || 0;
     for (var i = 0; i < 5; i++) {
-      t = data.touches[i];
+      c = data.touches[i];
       p = prev.touches[i];
-      if (t != null) {
+      if (c != null) {
         if (p == null) {
-          t.dx = 0;
-          t.dy = 0;
+          c.dx = 0;
+          c.dy = 0;
         } else {
-          t.dx = (p.x - t.x) || 0;
-          t.dy = (p.y - t.y) || 0;
+          c.dx = (p.x - c.x) || 0;
+          c.dy = (p.y - c.y) || 0;
         }
       }
     }
