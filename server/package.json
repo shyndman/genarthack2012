@@ -1,0 +1,11 @@
+{
+    "name": "genarthack",
+    "description": "genart hack",
+    "author": "DW & SH",
+    "version": "1.0.0",
+    "dependencies": {
+        "express": "~2",
+        "ejs": "*",
+        "websocket": "*"
+    }
+}
